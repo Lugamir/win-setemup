@@ -4,3 +4,5 @@ test2:
     - a
     - b
     - c
+choco_apps:
+    - test-bla-nonexistent-package
