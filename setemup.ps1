@@ -29,7 +29,16 @@ if ($confirm -ne 'y') {
 }
 Write-Host "---------------[ LET'S-GO ]----------------"
 
-Write-Host "----------------CHOCO-APPS-----------------"
+Write-Host "---------------CHOCO-&-APPS----------------"
+
+$testChocoVer = powershell choco -v
+if (-not $testChocoVer) {
+    Write-Output "detected no choco, installing now..."
+	iex $webClient.DownloadString('https://chocolatey.org/install.ps1')
+} else {
+    Write-Output "detected choco version $testChocoVer"
+}
+
 foreach ($app in $config.choco_apps) {
 	# TODO : simpler way to check if remote choco package exists
 	$measure = choco search -er $app | Measure-Object -Line
