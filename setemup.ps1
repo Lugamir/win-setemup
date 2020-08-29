@@ -30,8 +30,12 @@ if ($confirm -ne 'y') {
 }
 Write-Host "---------------[ LET'S-GO ]----------------"
 
-Write-Host "---------------CHOCO-&-APPS----------------"
+Write-Host "---------------WIN-TELEMETRY---------------"
+# reduce telemetry only works for win10 enterprise/education/iot/server licenses
+Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' 'AllowTelemetry' '0'
+Write-Host "------------WIN-TELEMETRY-DONE-------------"
 
+Write-Host "---------------CHOCO-&-APPS----------------"
 $testChocoVer = powershell choco -v
 if (-not $testChocoVer) {
     Write-Output "detected no choco, installing now..."
@@ -44,7 +48,7 @@ foreach ($app in $config.choco_apps) {
 	# TODO : simpler way to check if remote choco package exists
 	$measure = choco search -er $app | Measure-Object -Line
 	if ($measure.lines -gt 1) {
-		Write-Host "----- installing $app"
+		Write-Host "installing $app"
 		choco install -y $app
 	} else {
 		Write-Host "!!! $app not found !!!"
