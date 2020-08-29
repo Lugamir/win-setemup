@@ -3,8 +3,9 @@ if (-not (Get-Module -Name "powershell-yaml")) {
 	Install-Module powershell-yaml -Force
 }
 
-$DesktopPath = [Environment]::GetFolderPath("Desktop")
+$webClient = [System.Net.WebClient]::new()
 $config = ConvertFrom-Yaml (Get-Content .\config.yml | Out-String)
+$DesktopPath = [Environment]::GetFolderPath("Desktop")
 
 function IsCurrentUserAdmin {
 	$user = [Security.Principal.WindowsIdentity]::GetCurrent()
