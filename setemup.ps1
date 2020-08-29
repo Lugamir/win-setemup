@@ -55,4 +55,10 @@ Write-Host "--------------CHOCO-APPS-DONE--------------"
 
 Write-Host "---------------[ ALL-DONE ]----------------"
 Write-Host "!!! Check your desktop for important logs !!!"
+
+$confirmation = Read-Host -Prompt "Restart pc? [Y]"
+if ($confirmation -eq 'y') {
+    Restart-Computer
+}
+
 Read-Host -Prompt "[ENTER] to exit"
