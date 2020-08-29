@@ -1,0 +1,6 @@
+---
+test1: test
+test2:
+    - a
+    - b
+    - c
