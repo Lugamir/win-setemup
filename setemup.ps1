@@ -24,7 +24,7 @@ if (-not $config) {
 	exit
 }
 
-$confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y]"
+$confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y | N]"
 if ($confirm -ne 'y') {
 	exit
 }
@@ -48,15 +48,25 @@ foreach ($app in $config.choco_apps) {
 		choco install -y $app
 	} else {
 		Write-Host "!!! $app not found !!!"
-		$app | Out-File $DesktopPath\choco_not_installed.txt -Append
+		$app | Out-File $DesktopPath\choco_ignored.txt -Append
 	}
 }
 Write-Host "--------------CHOCO-APPS-DONE--------------"
 
+Write-Host "----------------DEVICE-NAME----------------"
+$temp = $config.device_name # TODO : simpler way
+if ($temp) {
+	Write-Host "setting device name to $temp ..."
+	Rename-Computer -NewName $temp
+} else {
+	Write-Host "no device name specified, skipping..."
+}
+Write-Host "-------------DEVICE-NAME-DONE--------------"
+
 Write-Host "---------------[ ALL-DONE ]----------------"
 Write-Host "!!! Check your desktop for important logs !!!"
 
-$confirmation = Read-Host -Prompt "Restart pc? [Y]"
+$confirmation = Read-Host -Prompt "Restart pc? [Y | N]"
 if ($confirmation -eq 'y') {
     Restart-Computer
 }

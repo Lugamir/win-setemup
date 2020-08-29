@@ -1,3 +1,4 @@
 ---
+device_name:
 choco_apps:
     - test-bla-nonexistent-package
