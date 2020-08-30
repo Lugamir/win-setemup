@@ -1,4 +1,16 @@
 ---
-device_name:
+device_name: MyDevice
 choco_apps:
     - test-bla-nonexistent-package
+    # - 7zip.install
+    # - keepassxc
+    # - git
+    # - ojdkbuild8
+    # - ojdkbuild11
+    # - brave
+    # - notepadplusplus
+    # - authy-desktop
+    # - processhacker
+    # - intellijidea-ultimate
+    # - intellijidea-community
+    # - eclipse
