@@ -1,3 +1,5 @@
+#Requires -RunAsAdministrator
+
 if (-not (Get-Module -Name "powershell-yaml")) {
 	Write-Host "No powershell-yaml module detected, installing..."
 	Install-Module powershell-yaml -Force
@@ -6,16 +8,6 @@ if (-not (Get-Module -Name "powershell-yaml")) {
 $webClient = [System.Net.WebClient]::new()
 $config = ConvertFrom-Yaml (Get-Content .\config.yml | Out-String)
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
-
-function IsCurrentUserAdmin {
-	$user = [Security.Principal.WindowsIdentity]::GetCurrent()
-	return (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-}
-
-if (-not (IsCurrentUserAdmin)) {
-	Read-Host -Prompt "Needs to be executed in Admin PowerShell - [ENTER] to exit"
-	exit
-}
 
 Write-Host (Get-Content -Raw .\welcome.txt)
 
