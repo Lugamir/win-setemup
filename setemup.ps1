@@ -21,18 +21,39 @@ $confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y
 if ($confirm -ne 'y') {
 	exit
 }
+
 Write-Host "---------------[ LET'S-GO ]----------------"
 
-Write-Host "---------------WIN-TELEMETRY---------------"
-# reduce telemetry only works for win10 enterprise/education/iot/server licenses
-Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' 'AllowTelemetry' '0'
-Write-Host "------------WIN-TELEMETRY-DONE-------------"
+Write-Host "--------------WIN-REG-CHANGES------------"
+
+# reduce telemetry to 0 only works for win10 enterprise/education/iot/server licenses, system doesn't mention it though
+Write-Host "reducing telemetry as far as possible for current win license..."
+Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' AllowTelemetry 0
+
+$regExplorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
+
+Write-Host "unhiding hidden files..."
+Set-ItemProperty $regExplorer\Advanced Hidden 1
+
+Write-Host "unhiding file extensions..."
+Set-ItemProperty $regExplorer\Advanced HideFileExt 0
+
+Write-Host "unhiding superhidden files..."
+Set-ItemProperty $regExplorer\Advanced ShowSuperHidden 1
+
+Write-Host "unhiding full path in file explorer title bar..."
+Set-ItemProperty $regExplorer\CabinetState FullPath 1
+
+Write-Host "restarting file explorer..."
+Stop-Process -processname explorer
 
 Write-Host "---------------CHOCO-&-APPS----------------"
+
 $testChocoVer = powershell choco -v
+
 if (-not $testChocoVer) {
     Write-Output "detected no choco, installing now..."
-	iex $webClient.DownloadString('https://chocolatey.org/install.ps1')
+	Invoke-Expression $webClient.DownloadString('https://chocolatey.org/install.ps1')
 } else {
     Write-Output "detected choco version $testChocoVer"
 }
@@ -48,9 +69,8 @@ foreach ($app in $config.choco_apps) {
 		$app | Out-File $DesktopPath\choco_ignored.txt -Append
 	}
 }
-Write-Host "--------------CHOCO-APPS-DONE--------------"
 
-Write-Host "----------------DEVICE-NAME----------------"
+Write-Host "----------------OTHER-STUFF----------------"
 $temp = $config.device_name # TODO : simpler way
 if ($temp) {
 	Write-Host "setting device name to $temp ..."
@@ -58,7 +78,6 @@ if ($temp) {
 } else {
 	Write-Host "no device name specified, skipping..."
 }
-Write-Host "-------------DEVICE-NAME-DONE--------------"
 
 Write-Host "---------------[ ALL-DONE ]----------------"
 Write-Host "!!! Check your desktop for important logs !!!"
@@ -68,4 +87,4 @@ if ($confirmation -eq 'y') {
     Restart-Computer
 }
 
-Read-Host -Prompt "[ENTER] to exit"
+Read-Host -Prompt "Some changes won't take effect until next restart! - [ENTER] to exit"
