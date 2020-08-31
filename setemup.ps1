@@ -1,4 +1,5 @@
 #Requires -RunAsAdministrator
+#Requires -Version 5
 
 if (-not (Get-Module -Name "powershell-yaml")) {
 	Write-Host "No powershell-yaml module detected, installing..."
