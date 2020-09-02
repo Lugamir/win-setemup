@@ -18,13 +18,13 @@ if (-not $config) {
 }
 
 $confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y | N]"
-if ($confirm -ne 'y') {
+if ($confirm -ine 'y') {
 	exit
 }
 
-Write-Host "---------------[ LET'S-GO ]----------------"
+Write-Host "----------------[ LET'S-GO ]---------------"
 
-Write-Host "--------------WIN-REG-CHANGES------------"
+Write-Host "---------------WIN-REG-CHANGES-------------"
 
 # reduce telemetry to 0 only works for win10 enterprise/education/iot/server licenses, system doesn't mention it though
 Write-Host "reducing telemetry as far as possible for current win license..."
@@ -47,7 +47,7 @@ Set-ItemProperty $regExplorer\CabinetState FullPath 1
 Write-Host "restarting file explorer..."
 Stop-Process -processname explorer
 
-Write-Host "---------------CHOCO-&-APPS----------------"
+Write-Host "----------------CHOCO-&-APPS---------------"
 
 $testChocoVer = powershell choco -v
 
@@ -71,6 +71,7 @@ foreach ($app in $config.choco_apps) {
 }
 
 Write-Host "----------------OTHER-STUFF----------------"
+
 $temp = $config.device_name # TODO : simpler way
 if ($temp) {
 	Write-Host "setting device name to $temp ..."
@@ -83,7 +84,7 @@ Write-Host "---------------[ ALL-DONE ]----------------"
 Write-Host "!!! Check your desktop for important logs !!!"
 
 $confirmation = Read-Host -Prompt "Restart pc? [Y | N]"
-if ($confirmation -eq 'y') {
+if ($confirmation -ieq 'y') {
     Restart-Computer
 }
 
