@@ -53,6 +53,7 @@ $testChocoVer = powershell choco -v
 
 if (-not $testChocoVer) {
     Write-Output "detected no choco, installing now..."
+	# TODO : checksum check
 	Invoke-Expression $webClient.DownloadString('https://chocolatey.org/install.ps1')
 } else {
     Write-Output "detected choco version $testChocoVer"
@@ -61,6 +62,7 @@ if (-not $testChocoVer) {
 foreach ($app in $config.choco_apps) {
 	# TODO : simpler way to check if remote choco package exists
 	$measure = choco search -er $app | Measure-Object -Line
+	# chocolatey always outputs its version so minimum one line
 	if ($measure.lines -gt 1) {
 		Write-Host "installing $app"
 		choco install -y $app
@@ -72,10 +74,10 @@ foreach ($app in $config.choco_apps) {
 
 Write-Host "----------------OTHER-STUFF----------------"
 
-$temp = $config.device_name # TODO : simpler way
-if ($temp) {
-	Write-Host "setting device name to $temp ..."
-	Rename-Computer -NewName $temp
+$new_device_name = $config.device_name.toString()
+if ($new_device_name) {
+	Write-Host "setting device name to $new_device_name ..."
+	Rename-Computer -NewName $new_device_name
 } else {
 	Write-Host "no device name specified, skipping..."
 }
