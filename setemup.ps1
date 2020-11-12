@@ -57,6 +57,32 @@ if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
 Write-Host "restarting file explorer..."
 Stop-Process -processname explorer
 
+if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
+	Write-Host "unhiding full path in file explorer title bar..."
+	Set-ItemProperty $regExplorer\CabinetState FullPath 1
+}
+
+if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
+	Write-Host "unhiding full path in file explorer title bar..."
+	Set-ItemProperty $regExplorer\CabinetState FullPath 1
+}
+
+if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
+	Write-Host "unhiding full path in file explorer title bar..."
+	Set-ItemProperty $regExplorer\CabinetState FullPath 1
+}
+
+if ($config.theme.dark_mode -eq 'true') {
+	Write-Host "setting dark mode..."
+	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize SystemUsesLightTheme 0
+	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize AppsUseLightTheme 0
+}
+
+if ($config.theme.transparency_off -eq 'true') {
+	Write-Host "turning off transparency..."
+	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize EnableTransparency 0
+}
+
 Write-Host "----------------CHOCO-&-APPS---------------"
 
 $testChocoVer = powershell choco -v
@@ -84,12 +110,10 @@ foreach ($app in $config.choco_apps) {
 
 Write-Host "----------------OTHER-STUFF----------------"
 
-$new_device_name = $config.device_name.toString()
-if ($new_device_name) {
+if ($config.device_name) {
+	$new_device_name = $config.device_name.toString()
 	Write-Host "setting device name to $new_device_name ..."
 	Rename-Computer -NewName $new_device_name
-} else {
-	Write-Host "no device name specified, skipping..."
 }
 
 Write-Host "---------------[ ALL-DONE ]----------------"

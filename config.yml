@@ -6,9 +6,12 @@ file_explorer:
     unhide_file_extensions: true
     unhide_superhidden_files: false
     unhide_full_path_in_title: true
+theme:
+    dark_mode: true
+    transparency_off: false
 # leave device name empty if no change needed
 device_name:
-# add exact choco package names to install
+# add exact choco package names to install, some examples are listed
 choco_apps:
     - test-bla-nonexistent-package
     # - 7zip.install
