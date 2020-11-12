@@ -9,6 +9,8 @@ file_explorer:
 theme:
     dark_mode: true
     transparency_off: false
+sideload_apps: true
+developer_mode: true
 # leave device name empty if no change needed
 device_name:
 # add exact choco package names to install, some examples are listed

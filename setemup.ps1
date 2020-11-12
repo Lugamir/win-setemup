@@ -83,6 +83,15 @@ if ($config.theme.transparency_off -eq 'true') {
 	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize EnableTransparency 0
 }
 
+if ($config.developer_mode -eq 'true') {
+	Write-Host "enabling developer mode..."
+	Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ AllowAllTrustedApps 1
+	Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ AllowDevelopmentWithoutDevLicense 1
+} elseif ($config.sideload_apps -eq 'true') {
+	Write-Host "enabling sideload apps..."
+	Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ AllowAllTrustedApps 1
+}
+
 Write-Host "----------------CHOCO-&-APPS---------------"
 
 $testChocoVer = powershell choco -v
