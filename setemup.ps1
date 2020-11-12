@@ -27,22 +27,32 @@ Write-Host "----------------[ LET'S-GO ]---------------"
 Write-Host "---------------WIN-REG-CHANGES-------------"
 
 # reduce telemetry to 0 only works for win10 enterprise/education/iot/server licenses, system doesn't mention it though
-Write-Host "reducing telemetry as far as possible for current win license..."
-Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' AllowTelemetry 0
+if ($config.reduce_telemetry -eq 'true') {
+	Write-Host "reducing telemetry as far as possible for current win license..."
+	Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' AllowTelemetry 0
+}
 
 $regExplorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
 
-Write-Host "unhiding hidden files..."
-Set-ItemProperty $regExplorer\Advanced Hidden 1
+if ($config.file_explorer.unhide_hidden_files -eq 'true') {
+	Write-Host "unhiding hidden files..."
+	Set-ItemProperty $regExplorer\Advanced Hidden 1
+}
 
-Write-Host "unhiding file extensions..."
-Set-ItemProperty $regExplorer\Advanced HideFileExt 0
+if ($config.file_explorer.unhide_file_extensions -eq 'true') {
+	Write-Host "unhiding file extensions..."
+	Set-ItemProperty $regExplorer\Advanced HideFileExt 0
+}
 
-Write-Host "unhiding superhidden files..."
-Set-ItemProperty $regExplorer\Advanced ShowSuperHidden 1
+if ($config.file_explorer.unhide_superhidden_files -eq 'true') {
+	Write-Host "unhiding superhidden files..."
+	Set-ItemProperty $regExplorer\Advanced ShowSuperHidden 1
+}
 
-Write-Host "unhiding full path in file explorer title bar..."
-Set-ItemProperty $regExplorer\CabinetState FullPath 1
+if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
+	Write-Host "unhiding full path in file explorer title bar..."
+	Set-ItemProperty $regExplorer\CabinetState FullPath 1
+}
 
 Write-Host "restarting file explorer..."
 Stop-Process -processname explorer
@@ -60,7 +70,7 @@ if (-not $testChocoVer) {
 }
 
 foreach ($app in $config.choco_apps) {
-	# TODO : simpler way to check if remote choco package exists
+	# TODO : correct way to check if remote choco package exists
 	$measure = choco search -er $app | Measure-Object -Line
 	# chocolatey always outputs its version so minimum one line
 	if ($measure.lines -gt 1) {

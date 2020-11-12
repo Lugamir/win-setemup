@@ -1,5 +1,14 @@
 ---
-device_name: MyDevice
+# yes / no values only react to true, otherwise they are ignored
+reduce_telemetry: true
+file_explorer:
+    unhide_hidden_files: true
+    unhide_file_extensions: true
+    unhide_superhidden_files: false
+    unhide_full_path_in_title: true
+# leave device name empty if no change needed
+device_name:
+# add exact choco package names to install
 choco_apps:
     - test-bla-nonexistent-package
     # - 7zip.install
