@@ -11,8 +11,9 @@ theme:
     transparency_off: false
 sideload_apps: true
 developer_mode: true
-# leave device name empty if no change needed
+# leave empty if no change needed
 device_name:
+wallpaper_full_path:
 # add exact choco package names to install, some examples are listed
 choco_apps:
     - test-bla-nonexistent-package

@@ -110,6 +110,16 @@ if ($config.device_name) {
 	Rename-Computer -NewName $new_device_name
 }
 
+$wallpaper = $config.wallpaper_full_path
+if ($wallpaper) {
+	if (Test-Path $wallpaper) {
+		Write-Host "setting wallpaper to $wallpaper ..."
+		Set-ItemProperty 'HKCU:\Control Panel\Desktop\' WallPaper $wallpaper
+	} else {
+		Write-Host "can't read wallpaper path [ $wallpaper ]."
+	}
+}
+
 Write-Host "---------------[ ALL-DONE ]----------------"
 Write-Host "!!! Check your desktop for important logs !!!"
 
