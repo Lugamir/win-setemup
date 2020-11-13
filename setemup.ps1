@@ -54,6 +54,19 @@ if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
 	Set-ItemProperty $regExplorer\CabinetState FullPath 1
 }
 
+if ($config.task_bar.search_bar_mode) {
+	if ($config.task_bar.search_bar_mode -eq 'hidden') {
+		Write-Host "hiding task bar search bar..."
+		Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search SearchboxTaskbarMode 0
+	} elseif ($config.task_bar.search_bar_mode -eq 'icon') {
+		Write-Host "hiding task bar search field..."
+		Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search SearchboxTaskbarMode 1
+	} elseif ($config.task_bar.search_bar_mode -eq 'full') {
+		Write-Host "hiding task bar search field..."
+		Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search SearchboxTaskbarMode 2
+	}
+}
+
 Write-Host "restarting file explorer..."
 Stop-Process -processname explorer
 

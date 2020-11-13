@@ -6,6 +6,9 @@ file_explorer:
     unhide_file_extensions: true
     unhide_superhidden_files: false
     unhide_full_path_in_title: true
+task_bar:
+    # can be 'full', 'icon' or 'hidden'
+    search_bar_mode: hidden
 theme:
     dark_mode: true
     transparency_off: false
