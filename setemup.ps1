@@ -67,6 +67,11 @@ if ($config.task_bar.search_bar_mode) {
 	}
 }
 
+if ($config.task_bar.hide_task_view -eq 'true') {
+	Write-Host "hiding task bar task view button..."
+	Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowTaskViewButton 0
+}
+
 Write-Host "restarting file explorer..."
 Stop-Process -processname explorer
 
