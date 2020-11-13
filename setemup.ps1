@@ -57,21 +57,6 @@ if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
 Write-Host "restarting file explorer..."
 Stop-Process -processname explorer
 
-if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
-	Write-Host "unhiding full path in file explorer title bar..."
-	Set-ItemProperty $regExplorer\CabinetState FullPath 1
-}
-
-if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
-	Write-Host "unhiding full path in file explorer title bar..."
-	Set-ItemProperty $regExplorer\CabinetState FullPath 1
-}
-
-if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
-	Write-Host "unhiding full path in file explorer title bar..."
-	Set-ItemProperty $regExplorer\CabinetState FullPath 1
-}
-
 if ($config.theme.dark_mode -eq 'true') {
 	Write-Host "setting dark mode..."
 	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize SystemUsesLightTheme 0
