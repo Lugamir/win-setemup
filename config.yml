@@ -3,7 +3,7 @@
 # empty values are left at default
 logging:
     silent:
-    no_log_file: true
+    do_log_file:
     log_path:  # full log path with logfile name, default is at script location
 reduce_telemetry:
 file_explorer:

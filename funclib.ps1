@@ -8,7 +8,7 @@ Function Write-Log {
 
     $LogMessage = "$(Get-Date -Format G); $Severity; $LogMessage"
 
-    if (-not $NoLog) {
+    if ($DoLogFile) {
         if (-not $LogPath) {
             $LogPath = "$PSScriptRoot\setemup.log" # default log path
         }
@@ -23,7 +23,7 @@ Function Write-Log {
         default { $Color = "White" }
     }
 
-    if ($Silent -ne 'true') {
+    if ($Silent -ne $true) {
         Write-Host -ForegroundColor $Color $LogMessage
     }
 }

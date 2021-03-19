@@ -3,14 +3,38 @@
 
 . "$PSScriptRoot\funclib.ps1"
 
+$confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y | N]"
+if ($confirm -ine 'y') {
+	Write-Log -Severity 'Warning' -LogMessage "Config values not set, aborting."
+	exit
+}
+
+$DesktopPath = [Environment]::GetFolderPath("Desktop")
+
+# --------- get config values ---------
+
 if (-not (Get-Module -Name "powershell-yaml")) {
 	Write-Log -LogMessage "No powershell-yaml module detected, installing..."
 	Install-Module powershell-yaml -Force
 }
 
-$webClient = [System.Net.WebClient]::new()
 $config = ConvertFrom-Yaml (Get-Content .\config.yml | Out-String)
-$DesktopPath = [Environment]::GetFolderPath("Desktop")
+
+# --------- set logging values ---------
+
+if ($config.logging.silent -eq 'true') {
+	$Silent = 'true'
+}
+
+if ($config.logging.do_log_file -eq 'true') {
+	$DoLogFile = 'true'
+}
+
+if ($config.logging.log_path) {
+	$LogPath = $config.logging.log_path
+}
+
+# --------------------------------------
 
 Write-Log -LogMessage (Get-Content -Raw .\welcome.txt)
 
@@ -18,26 +42,6 @@ if (-not $config) {
 	Write-Log -Severity 'Error' -LogMessage "Parsed config.yml content empty, aborting."
 	Read-Host -Prompt "[ENTER] to exit"
 	exit
-}
-
-$confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y | N]"
-if ($confirm -ine 'y') {
-	Write-Log -Severity 'Warning' -LogMessage "Config values not set, aborting."
-	exit
-}
-
-# --------- set logging values ---------
-
-if ($config.logging.silent -eq 'true') {
-	$NoLog = $true
-}
-
-if ($config.logging.no_log_file -eq 'true') {
-	$NoLog = $true
-}
-
-if ($config.logging.log_path) {
-	$LogPath = $config.logging.log_path
 }
 
 Write-Log -LogMessage "--------------[ INSTALLATION ]-------------"
@@ -120,6 +124,7 @@ $testChocoVer = powershell choco -v
 if (-not $testChocoVer) {
 	Write-Log -LogMessage "detected no choco, installing now..."
 	# TODO : checksum check
+	$webClient = [System.Net.WebClient]::new()
 	Invoke-Expression $webClient.DownloadString('https://chocolatey.org/install.ps1')
 } else {
 	Write-Log -LogMessage "detected choco version $testChocoVer"
