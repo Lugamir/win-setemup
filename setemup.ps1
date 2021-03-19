@@ -9,7 +9,7 @@ if ($confirm -ine 'y') {
 	exit
 }
 
-$DesktopPath = [Environment]::GetFolderPath("Desktop")
+$nl = [Environment]::NewLine
 
 # --------- get config values ---------
 
@@ -130,6 +130,8 @@ if (-not $testChocoVer) {
 	Write-Log -LogMessage "detected choco version $testChocoVer"
 }
 
+$skippedChocoApps = [System.Collections.ArrayList]::new()
+
 foreach ($app in $config.choco_apps) {
 	# TODO : correct way to check if remote choco package exists
 	$measure = choco search -er $app | Measure-Object -Line
@@ -139,7 +141,7 @@ foreach ($app in $config.choco_apps) {
 		choco install -y $app
 	} else {
 		Write-Log -Severity 'Warning' -LogMessage "$app not found, skipping..."
-		$app | Out-File $DesktopPath\choco_ignored.txt -Append
+		$skippedChocoApps.add($app) | Out-Null
 	}
 }
 
@@ -162,7 +164,11 @@ if ($wallpaper) {
 }
 
 Write-Log -Severity 'Ok' -LogMessage "---------------[ ALL-DONE ]----------------"
-Write-Log -Severity 'Warning' -LogMessage "Check your desktop for important logs!"
+
+if ($skippedChocoApps -gt 0) {
+	$skippedChocoApps | ForEach-Object {$temp += "$nl - $PSItem"}
+	Write-Log -Severity 'Warning' -LogMessage "Not found / skipped choco packages:$temp"
+}
 
 $confirmation = Read-Host -Prompt "Restart pc? [Y | N]"
 if ($confirmation -ieq 'y') {
