@@ -7,33 +7,37 @@ logging:
     log_path:  # full log path with logfile name, default is at script location
 reduce_telemetry:
 file_explorer:
-    unhide_hidden_files: true
-    unhide_file_extensions: true
-    unhide_superhidden_files: false
-    unhide_full_path_in_title: true
+    unhide_hidden_files:
+    unhide_file_extensions:
+    unhide_superhidden_files:
+    unhide_full_path_in_title:
 task_bar:
-    search_bar_mode: hidden # full / icon / hidden
-    hide_task_view: true
+    search_bar_mode:  # full / icon / hidden
+    hide_task_view:
 theme:
-    dark_mode: true
-    transparency_off: false
-sideload_apps: true
-developer_mode: true
-# leave empty if no change needed
+    dark_mode:
+    transparency_off:
+sideload_apps:
+developer_mode:
 device_name:
 wallpaper_full_path:
 # add exact choco package names to install, some examples are listed
 choco_apps:
-    - test-bla-nonexistent-package
-    # - 7zip.install
+    # - 7zip
     # - keepassxc
     # - git
-    # - ojdkbuild8
-    # - ojdkbuild11
-    # - brave
     # - notepadplusplus
+    # - brave
+    # - Firefox
+    # - discord
+    # - greenshot
+    # - vlc
+    # - google-backup-and-sync
+    # - steam
     # - authy-desktop
     # - processhacker
+    # - ojdkbuild8
+    # - ojdkbuild11
     # - intellijidea-ultimate
     # - intellijidea-community
     # - eclipse
