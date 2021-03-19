@@ -10,7 +10,7 @@ Function Write-Log {
 
     if (-not $NoLog) {
         if (-not $LogPath) {
-            $LogPath = "$PSScriptRoot\setemup.log"
+            $LogPath = "$PSScriptRoot\setemup.log" # default log path
         }
         $LogMessage | Out-File -FilePath $LogPath -Append
     }

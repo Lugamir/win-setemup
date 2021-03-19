@@ -1,6 +1,8 @@
 #Requires -RunAsAdministrator
 #Requires -Version 5
 
+. "$PSScriptRoot\funclib.ps1"
+
 if (-not (Get-Module -Name "powershell-yaml")) {
 	Write-Host "No powershell-yaml module detected, installing..."
 	Install-Module powershell-yaml -Force
@@ -20,6 +22,18 @@ if (-not $config) {
 $confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y | N]"
 if ($confirm -ine 'y') {
 	exit
+}
+
+if ($config.logging.silent -eq 'true') {
+	$NoLog = $true
+}
+
+if ($config.logging.no_log_file -eq 'true') {
+	$NoLog = $true
+}
+
+if ($config.logging.log_path) {
+	$LogPath = $config.logging.log_path
 }
 
 Write-Host "----------------[ LET'S-GO ]---------------"

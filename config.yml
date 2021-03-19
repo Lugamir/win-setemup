@@ -1,6 +1,11 @@
 ---
 # yes / no values only react to true, otherwise they are ignored
-reduce_telemetry: true
+# empty values are left at default
+logging:
+    silent:
+    no_log_file: true
+    log_path:  # full log path with logfile name, default is at script location
+reduce_telemetry:
 file_explorer:
     unhide_hidden_files: true
     unhide_file_extensions: true
