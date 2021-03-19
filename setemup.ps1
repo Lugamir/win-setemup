@@ -4,7 +4,7 @@
 . "$PSScriptRoot\funclib.ps1"
 
 if (-not (Get-Module -Name "powershell-yaml")) {
-	Write-Host "No powershell-yaml module detected, installing..."
+	Write-Log -LogMessage "No powershell-yaml module detected, installing..."
 	Install-Module powershell-yaml -Force
 }
 
@@ -12,17 +12,21 @@ $webClient = [System.Net.WebClient]::new()
 $config = ConvertFrom-Yaml (Get-Content .\config.yml | Out-String)
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
 
-Write-Host (Get-Content -Raw .\welcome.txt)
+Write-Log -LogMessage (Get-Content -Raw .\welcome.txt)
 
 if (-not $config) {
-	Read-Host -Prompt "Parsed config.yml content empty, aborting - [ENTER] to exit"
+	Write-Log -Severity 'Error' -LogMessage "Parsed config.yml content empty, aborting."
+	Read-Host -Prompt "[ENTER] to exit"
 	exit
 }
 
 $confirm = Read-Host -Prompt "Did you set the config.yml values? Start setup? [Y | N]"
 if ($confirm -ine 'y') {
+	Write-Log -Severity 'Warning' -LogMessage "Config values not set, aborting."
 	exit
 }
+
+# --------- set logging values ---------
 
 if ($config.logging.silent -eq 'true') {
 	$NoLog = $true
@@ -36,89 +40,89 @@ if ($config.logging.log_path) {
 	$LogPath = $config.logging.log_path
 }
 
-Write-Host "----------------[ LET'S-GO ]---------------"
+Write-Log -LogMessage "--------------[ INSTALLATION ]-------------"
 
-Write-Host "---------------WIN-REG-CHANGES-------------"
+Write-Log -LogMessage "---------------WIN-REG-CHANGES-------------"
 
 # reduce telemetry to 0 only works for win10 enterprise/education/iot/server licenses, system doesn't mention it though
 if ($config.reduce_telemetry -eq 'true') {
-	Write-Host "reducing telemetry as far as possible for current win license..."
+	Write-Log -LogMessage "reducing telemetry as far as possible for current win license..."
 	Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' AllowTelemetry 0
 }
 
 $regExplorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
 
 if ($config.file_explorer.unhide_hidden_files -eq 'true') {
-	Write-Host "unhiding hidden files..."
+	Write-Log -LogMessage "unhiding hidden files..."
 	Set-ItemProperty $regExplorer\Advanced Hidden 1
 }
 
 if ($config.file_explorer.unhide_file_extensions -eq 'true') {
-	Write-Host "unhiding file extensions..."
+	Write-Log -LogMessage "unhiding file extensions..."
 	Set-ItemProperty $regExplorer\Advanced HideFileExt 0
 }
 
 if ($config.file_explorer.unhide_superhidden_files -eq 'true') {
-	Write-Host "unhiding superhidden files..."
+	Write-Log -LogMessage "unhiding superhidden files..."
 	Set-ItemProperty $regExplorer\Advanced ShowSuperHidden 1
 }
 
 if ($config.file_explorer.unhide_full_path_in_title -eq 'true') {
-	Write-Host "unhiding full path in file explorer title bar..."
+	Write-Log -LogMessage "unhiding full path in file explorer title bar..."
 	Set-ItemProperty $regExplorer\CabinetState FullPath 1
 }
 
 if ($config.task_bar.search_bar_mode) {
 	if ($config.task_bar.search_bar_mode -eq 'hidden') {
-		Write-Host "hiding task bar search bar..."
+		Write-Log -LogMessage "hiding task bar search bar..."
 		Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search SearchboxTaskbarMode 0
 	} elseif ($config.task_bar.search_bar_mode -eq 'icon') {
-		Write-Host "hiding task bar search field..."
+		Write-Log -LogMessage "hiding task bar search field..."
 		Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search SearchboxTaskbarMode 1
 	} elseif ($config.task_bar.search_bar_mode -eq 'full') {
-		Write-Host "hiding task bar search field..."
+		Write-Log -LogMessage "hiding task bar search field..."
 		Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search SearchboxTaskbarMode 2
 	}
 }
 
 if ($config.task_bar.hide_task_view -eq 'true') {
-	Write-Host "hiding task bar task view button..."
+	Write-Log -LogMessage "hiding task bar task view button..."
 	Set-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowTaskViewButton 0
 }
 
-Write-Host "restarting file explorer..."
+Write-Log -LogMessage "restarting file explorer..."
 Stop-Process -processname explorer
 
 if ($config.theme.dark_mode -eq 'true') {
-	Write-Host "setting dark mode..."
+	Write-Log -LogMessage "setting dark mode..."
 	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize SystemUsesLightTheme 0
 	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize AppsUseLightTheme 0
 }
 
 if ($config.theme.transparency_off -eq 'true') {
-	Write-Host "turning off transparency..."
+	Write-Log -LogMessage "turning off transparency..."
 	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize EnableTransparency 0
 }
 
 if ($config.developer_mode -eq 'true') {
-	Write-Host "enabling developer mode..."
+	Write-Log -LogMessage "enabling developer mode..."
 	Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ AllowAllTrustedApps 1
 	Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ AllowDevelopmentWithoutDevLicense 1
 } elseif ($config.sideload_apps -eq 'true') {
-	Write-Host "enabling sideload apps..."
+	Write-Log -LogMessage "enabling sideload apps..."
 	Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ AllowAllTrustedApps 1
 }
 
-Write-Host "----------------CHOCO-&-APPS---------------"
+Write-Log -LogMessage "----------------CHOCO-&-APPS---------------"
 
 $testChocoVer = powershell choco -v
 
 if (-not $testChocoVer) {
-    Write-Output "detected no choco, installing now..."
+	Write-Log -LogMessage "detected no choco, installing now..."
 	# TODO : checksum check
 	Invoke-Expression $webClient.DownloadString('https://chocolatey.org/install.ps1')
 } else {
-    Write-Output "detected choco version $testChocoVer"
+	Write-Log -LogMessage "detected choco version $testChocoVer"
 }
 
 foreach ($app in $config.choco_apps) {
@@ -126,37 +130,38 @@ foreach ($app in $config.choco_apps) {
 	$measure = choco search -er $app | Measure-Object -Line
 	# chocolatey always outputs its version so minimum one line
 	if ($measure.lines -gt 1) {
-		Write-Host "installing $app"
+		Write-Log -LogMessage "installing $app"
 		choco install -y $app
 	} else {
-		Write-Host "!!! $app not found !!!"
+		Write-Log -Severity 'Warning' -LogMessage "$app not found, skipping..."
 		$app | Out-File $DesktopPath\choco_ignored.txt -Append
 	}
 }
 
-Write-Host "----------------OTHER-STUFF----------------"
+Write-Log -LogMessage "----------------OTHER-STUFF----------------"
 
 if ($config.device_name) {
 	$new_device_name = $config.device_name.toString()
-	Write-Host "setting device name to $new_device_name ..."
+	Write-Log -LogMessage "setting device name to $new_device_name ..."
 	Rename-Computer -NewName $new_device_name
 }
 
 $wallpaper = $config.wallpaper_full_path
 if ($wallpaper) {
 	if (Test-Path $wallpaper) {
-		Write-Host "setting wallpaper to $wallpaper ..."
+		Write-Log -LogMessage "setting wallpaper to $wallpaper ..."
 		Set-ItemProperty 'HKCU:\Control Panel\Desktop\' WallPaper $wallpaper
 	} else {
-		Write-Host "can't read wallpaper path [ $wallpaper ]."
+		Write-Log -Severity 'Warning' -LogMessage "can't read wallpaper path [ $wallpaper ], skipping..."
 	}
 }
 
-Write-Host "---------------[ ALL-DONE ]----------------"
-Write-Host "!!! Check your desktop for important logs !!!"
+Write-Log -Severity 'Ok' -LogMessage "---------------[ ALL-DONE ]----------------"
+Write-Log -Severity 'Warning' -LogMessage "Check your desktop for important logs!"
 
 $confirmation = Read-Host -Prompt "Restart pc? [Y | N]"
 if ($confirmation -ieq 'y') {
+	Write-Log -LogMessage "restarting pc..."
     Restart-Computer
 }
 
